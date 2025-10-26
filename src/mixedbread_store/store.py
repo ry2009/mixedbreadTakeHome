@@ -304,6 +304,7 @@ class DiskBackedMultiVectorStore:
             raise ValueError("query_vector must be 2D [num_tokens, embed_dim]")
         query = np.ascontiguousarray(query_vector, dtype=np.float32)
         query_norm = _normalize_rows(query)
+        query_dim = query_norm.shape[1]
 
         docs: List[Tuple[int, np.ndarray]] = []
         for doc_id in doc_ids:
@@ -319,6 +320,13 @@ class DiskBackedMultiVectorStore:
             if stored_doc_id != int(doc_id):
                 # Index might be stale; skip for safety.
                 continue
+            if embed_dim != query_dim:
+                raise ValueError(
+                    "Query embedding dimension {query_dim} does not match document "
+                    "{doc_id} embedding dimension {embed_dim}".format(
+                        query_dim=query_dim, doc_id=int(doc_id), embed_dim=embed_dim
+                    )
+                )
             doc_buffer = memoryview(raw)[HEADER_STRUCT.size :]
             doc_int8 = np.frombuffer(doc_buffer, dtype=np.int8).reshape(seq_len, embed_dim)
             doc = np.ascontiguousarray(doc_int8, dtype=np.float32)
