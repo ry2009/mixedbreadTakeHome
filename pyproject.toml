@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mixedbread-store"
+version = "0.1.0"
+description = "Disk-backed multivector store with MaxSim ranking"
+authors = [{name = "Mixedbread Candidate"}]
+license = {text = "MIT"}
+dependencies = [
+  "numpy>=1.24",
+  "tqdm>=4.66"
+]
+requires-python = ">=3.10"
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
+
+[project.scripts]
+mvstore-benchmark = "mixedbread_store.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
